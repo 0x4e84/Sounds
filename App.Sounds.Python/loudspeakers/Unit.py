@@ -2,19 +2,11 @@ class Unit(object):
     SI_units = ["m", "s", "kg", "mol", "Cd", "K", "A"]
 
     def __init__(self, meaning, name, symbol, factor=1.0, m=0, s=0, kg=0, mol=0, cd=0, k=0, a=0):
-        self.SI_indexes = {}
         self.meaning = meaning
         self.name = name
         self.symbol = symbol
         self.factor = factor
-        self.SI_indexes["m"] = m
-        self.SI_indexes["s"] = s
-        self.SI_indexes["kg"] = kg
-        self.SI_indexes["mol"] = mol
-        self.SI_indexes["Cd"] = cd
-        self.SI_indexes["K"] = k
-        self.SI_indexes["A"] = a
-        print(name, self.get_in_SI())
+        self.SI_indexes = {"m": m, "s": s, "kg": kg, "mol": mol, "Cd": cd, "K": k, "A": a}
 
     @classmethod
     def from_other_unit(cls, other, name=None, symbol=None, meaning=None, factor=1.0):
@@ -34,7 +26,6 @@ class Unit(object):
         return Unit(meaning=self.meaning + " by " + other.meaning,
                     name=self.name + " * " + other.name,
                     symbol=self.symbol + "·" + other.symbol,
-                    factor=self.factor * other.factor,
                     m=self.SI_indexes["m"] + other.SI_indexes["m"],
                     s=self.SI_indexes["s"] + other.SI_indexes["s"],
                     kg=self.SI_indexes["kg"] + other.SI_indexes["kg"],
@@ -47,7 +38,6 @@ class Unit(object):
         return Unit(meaning=self.meaning + " over " + other.meaning,
                     name=self.name + " / " + other.name,
                     symbol=self.symbol + "/" + other.symbol,
-                    factor=self.factor / other.factor,
                     m=self.SI_indexes["m"] - other.SI_indexes["m"],
                     s=self.SI_indexes["s"] - other.SI_indexes["s"],
                     kg=self.SI_indexes["kg"] - other.SI_indexes["kg"],
@@ -55,6 +45,18 @@ class Unit(object):
                     cd=self.SI_indexes["Cd"] - other.SI_indexes["Cd"],
                     k=self.SI_indexes["K"] - other.SI_indexes["K"],
                     a=self.SI_indexes["A"] - other.SI_indexes["A"])
+
+    def to_power(self, power):
+        return Unit(meaning=self.meaning,
+                    name=self.name,
+                    symbol=self.symbol,
+                    m=power * self.SI_indexes["m"],
+                    s=power * self.SI_indexes["s"],
+                    kg=power * self.SI_indexes["kg"],
+                    mol=power * self.SI_indexes["mol"],
+                    cd=power * self.SI_indexes["Cd"],
+                    k=power * self.SI_indexes["K"],
+                    a=power * self.SI_indexes["A"])
 
     def is_consistent(self, other):
         for key in self.SI_indexes:
@@ -86,6 +88,7 @@ class Unit(object):
             return "1/" + "·".join(denominator)
         else:
             return "·".join(numerator) + "/" + "·".join(denominator)
+
 
 # Fundamental SI units
 # Meter — length.
